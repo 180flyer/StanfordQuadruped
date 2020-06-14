@@ -1,6 +1,6 @@
 from src.Gaits import GaitController
-from src.StanceController import StanceController
-from src.SwingLegController import SwingController
+from src.EllipStanceController import StanceController
+from src.EllipSwingLegController import SwingController
 from src.Utilities import clipped_first_order_filter
 from src.State import BehaviorState, State
 
@@ -9,15 +9,19 @@ from transforms3d.euler import euler2mat, quat2euler
 from transforms3d.quaternions import qconjugate, quat2axangle
 from transforms3d.axangles import axangle2mat
 
+#import logging, sys
+
+#logging.basicConfig(filename='./log.txt', level=logging.DEBUG)
+
 
 class Controller:
     """Controller and planner object
     """
 
     def __init__(
-        self,
-        config,
-        inverse_kinematics,
+            self,
+            config,
+            inverse_kinematics,
     ):
         self.config = config
 
@@ -29,10 +33,16 @@ class Controller:
         self.swing_controller = SwingController(self.config)
         self.stance_controller = StanceController(self.config)
 
-        self.hop_transition_mapping = {BehaviorState.REST: BehaviorState.HOP, BehaviorState.HOP: BehaviorState.FINISHHOP, BehaviorState.FINISHHOP: BehaviorState.REST, BehaviorState.TROT: BehaviorState.HOP}
-        self.trot_transition_mapping = {BehaviorState.REST: BehaviorState.TROT, BehaviorState.TROT: BehaviorState.REST, BehaviorState.HOP: BehaviorState.TROT, BehaviorState.FINISHHOP: BehaviorState.TROT}
-        self.activate_transition_mapping = {BehaviorState.DEACTIVATED: BehaviorState.REST, BehaviorState.REST: BehaviorState.DEACTIVATED}
-
+        self.hop_transition_mapping = {BehaviorState.REST: BehaviorState.HOP,
+                                       BehaviorState.HOP: BehaviorState.FINISHHOP,
+                                       BehaviorState.FINISHHOP: BehaviorState.REST,
+                                       BehaviorState.TROT: BehaviorState.HOP}
+        self.trot_transition_mapping = {BehaviorState.REST: BehaviorState.TROT, BehaviorState.TROT: BehaviorState.REST,
+                                        BehaviorState.HOP: BehaviorState.TROT,
+                                        BehaviorState.FINISHHOP: BehaviorState.TROT}
+        self.activate_transition_mapping = {BehaviorState.DEACTIVATED: BehaviorState.REST,
+                                            BehaviorState.REST: BehaviorState.DEACTIVATED,
+                                            BehaviorState.TROT: BehaviorState.DEACTIVATED}
 
     def step_gait(self, state, command):
         """Calculate the desired foot locations for the next timestep
@@ -44,24 +54,26 @@ class Controller:
         """
         contact_modes = self.gait_controller.contacts(state.ticks)
         new_foot_locations = np.zeros((3, 4))
+
         for leg_index in range(4):
             contact_mode = contact_modes[leg_index]
             foot_location = state.foot_locations[:, leg_index]
             if contact_mode == 1:
                 new_location = self.stance_controller.next_foot_location(leg_index, state, command)
             else:
-                swing_proportion = (
-                    self.gait_controller.subphase_ticks(state.ticks) / self.config.swing_ticks
+                subphase_ticks = (
+                    self.gait_controller.subphase_ticks(state.ticks)
                 )
                 new_location = self.swing_controller.next_foot_location(
-                    swing_proportion,
+                    subphase_ticks,
                     leg_index,
                     state,
                     command
                 )
             new_foot_locations[:, leg_index] = new_location
+        # if leg_index == 0: logging.debug('%d, %d, %d, %0.4f, %0.4f, %0.4f', leg_index, contact_mode, swing_subphase_ticks, new_location[0], new_location[1], new_location[2])
+            #  if leg_index < 5: print("leg, mode, x, y, z: %d, %d, %0.4f, %0.4f, %0.4f\r" % (leg_index, contact_mode, new_location[0], new_location[1], new_location[2]))
         return new_foot_locations, contact_modes
-
 
     def run(self, state, command):
         """Steps the controller forward one timestep
@@ -70,6 +82,8 @@ class Controller:
         ----------
         controller : Controller
             Robot controller object.
+            :param command:
+            :param state:
         """
 
         ########## Update operating state based on command ######
