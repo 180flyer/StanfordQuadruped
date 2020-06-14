@@ -24,6 +24,19 @@ class StanceController:
         R = euler2mat(0, 0, theta)
         return R @ self.config.default_stance[:, leg_index] + delta_p
 
+    def foot_up_point(
+            self, leg_index, command
+    ):
+        fup = (
+                (self.config.alpha - 1.0)
+                * self.config.stance_ticks
+                * self.config.dt
+                * command.horizontal_velocity[0]
+                + self.config.default_stance[0, leg_index]
+        )
+
+        return fup
+
     def position_delta(self, leg_index, state, command):
         """Calculate the difference between the next desired body location and the current body location
         
@@ -65,24 +78,29 @@ class StanceController:
 
         # Override Z
         stance_x = incremented_location[0]
-        l1 = self.config.LEG_L1
-        l2 = self.config.LEG_L2
-        touchdown_location = self.raibert_touchdown_location(leg_index, command)
-        h = self.config.default_stance[0, leg_index]  # Center of ellipse
-        rtl_x = touchdown_location[0]
-        foot_up_angle = np.arcsin(-0.5)
-        foot_down_angle = np.pi - foot_up_angle
-        a = (rtl_x - h)/np.cos(foot_down_angle)
-        b = 2.8 * ((l1 + l2 / 2.0) - np.sqrt(l1 * l1 + l2 * l2))
-        k = command.height + b / 2.0  # improved ellipse center
-
-        if a == 0:
-            theta = 0
+        if stance_x < self.foot_up_point(leg_index, command):
+            z = command.height
         else:
-            theta = np.pi + np.arccos((h - stance_x)/a)
-        z = k + b * np.sin(theta)
+            l1 = self.config.LEG_L1
+            l2 = self.config.LEG_L2
+            touchdown_location = self.raibert_touchdown_location(leg_index, command)
+            h = self.config.default_stance[0, leg_index]  # Center of ellipse
+            rtl_x = touchdown_location[0]
+            foot_up_angle = np.arcsin(-0.5)
+            foot_down_angle = np.pi - foot_up_angle
+            a = (rtl_x - h)/np.cos(foot_down_angle)
+            b = 2.8 * ((l1 + l2 / 2.0) - np.sqrt(l1 * l1 + l2 * l2))
+            k = command.height + b / 2.0  # improved ellipse center
+
+            if a == 0:
+                theta = 3.0 * np.pi / 2.0
+            else:
+                theta = np.pi + np.arccos((h - stance_x)/a)
+
+            z = k + b * np.sin(theta)
+
         incremented_location[2] = z
-        if leg_index == 0: print("stance_x, l1, l2, rtl_x, a, b, k, fu, fd, theta, z: %0.4f, %0.4f, %0.4f, %0.4f,%0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f\r" % (
-            stance_x, l1, l2, rtl_x, a, b, k, foot_up_angle, foot_down_angle, theta, z))
+        # if leg_index == 0: print("stance_x, l1, l2, rtl_x, a, b, k, fu, fd, theta, z: %0.4f, %0.4f, %0.4f, %0.4f,%0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f\r" % (
+        #     stance_x, l1, l2, rtl_x, a, b, k, foot_up_angle, foot_down_angle, theta, z))
 
         return incremented_location
