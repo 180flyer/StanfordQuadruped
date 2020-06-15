@@ -89,7 +89,7 @@ class StanceController:
             foot_up_angle = np.arcsin(-0.5)
             foot_down_angle = np.pi - foot_up_angle
             a = (rtl_x - h)/np.cos(foot_down_angle)
-            b = 2.8 * ((l1 + l2 / 2.0) - np.sqrt(l1 * l1 + l2 * l2))
+            b = 2.2 * ((l1 + l2 / 2.0) - np.sqrt(l1 * l1 + l2 * l2))
             k = command.height + b / 2.0  # improved ellipse center
 
             if a == 0:

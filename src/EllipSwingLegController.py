@@ -49,7 +49,7 @@ class SwingController:
         foot_up_angle = np.arcsin(-0.5)
         foot_down_angle = np.pi - foot_up_angle
         a = (h - rtl_x)/np.cos(foot_down_angle)
-        b = 2.8 * ((l1 + l2 / 2.0) - np.sqrt(l1 * l1 + l2 * l2))
+        b = 2.2 * ((l1 + l2 / 2.0) - np.sqrt(l1 * l1 + l2 * l2))
         k = command.height + b / 2.0  # improved ellipse center
 
         swing_angle_range = foot_down_angle - foot_up_angle
