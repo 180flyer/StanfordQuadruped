@@ -52,7 +52,7 @@ class JoystickInterface:
             message_rate = msg["message_rate"]
             message_dt = 1.0 / message_rate
 
-            pitch = msg["ry"] * self.config.max_pitch
+            pitch = msg["ry"] * self.config.max_pitch * -1.0
             deadbanded_pitch = deadband(
                 pitch, self.config.pitch_deadband
             )

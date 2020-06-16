@@ -39,8 +39,7 @@ class Controller:
                                        BehaviorState.TROT: BehaviorState.HOP}
         self.trot_transition_mapping = {BehaviorState.REST: BehaviorState.TROT, BehaviorState.TROT: BehaviorState.REST,
                                         BehaviorState.HOP: BehaviorState.TROT,
-                                        BehaviorState.FINISHHOP: BehaviorState.TROT,
-                                        BehaviorState.DEACTIVATED: BehaviorState.DEACTIVATED}
+                                        BehaviorState.FINISHHOP: BehaviorState.TROT}
         self.activate_transition_mapping = {BehaviorState.DEACTIVATED: BehaviorState.REST,
                                             BehaviorState.REST: BehaviorState.DEACTIVATED,
                                             BehaviorState.TROT: BehaviorState.DEACTIVATED}
@@ -73,8 +72,8 @@ class Controller:
                     command
                 )
             new_foot_locations[:, leg_index] = new_location
-            if leg_index == 0: logging.debug('%d, %d, %d, %0.4f, %0.4f, %0.4f', leg_index, contact_mode, subphase_ticks, new_location[0], new_location[1], new_location[2])
-            #  if leg_index < 5: print("leg, mode, x, y, z: %d, %d, %0.4f, %0.4f, %0.4f\r" % (leg_index, contact_mode, new_location[0], new_location[1], new_location[2]))
+            #if leg_index == 0: logging.debug('%d, %d, %d, %0.4f, %0.4f, %0.4f', leg_index, contact_mode, subphase_ticks, new_location[0], new_location[1], new_location[2])
+            #if leg_index == 0: print("leg, mode, x, y, z: %d, %d, %0.4f, %0.4f, %0.4f\r" % (leg_index, contact_mode, new_location[0], new_location[1], new_location[2]))
         return new_foot_locations, contact_modes
 
     def run(self, state, command):
@@ -87,6 +86,7 @@ class Controller:
             :param command:
             :param state:
         """
+        contact_modes = [0, 0, 0, 0]
 
         ########## Update operating state based on command ######
         if command.activate_event:
@@ -175,6 +175,8 @@ class Controller:
         state.pitch = command.pitch
         state.roll = command.roll
         state.height = command.height
+
+        print("leg0(cmode,x,y,z): %d, %d, %0.4f, %0.4f, %0.4f\r" % (0, contact_modes[0], state.foot_locations[0, 0], state.foot_locations[1, 0], state.foot_locations[2, 0]))
 
     def set_pose_to_default(self):
         state.foot_locations = (

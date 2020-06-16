@@ -92,8 +92,9 @@ class StanceController:
             b = 2.2 * ((l1 + l2 / 2.0) - np.sqrt(l1 * l1 + l2 * l2))
             k = command.height + b / 2.0  # improved ellipse center
 
-            if a == 0:
-                theta = 3.0 * np.pi / 2.0
+            if command.horizontal_velocity[0] == 0:
+                #  theta = 3.0 * np.pi / 2.0
+                theta = foot_up_angle
             else:
                 theta = np.pi + np.arccos((h - stance_x)/a)
 
