@@ -36,12 +36,12 @@ class SwingController:
 
     def next_foot_location(
         self,
-        swing_prop,
+        swing_subphase_ticks,
         leg_index,
         state,
         command,
     ):
-        assert swing_prop >= 0 and swing_prop <= 1
+        swing_prop = swing_subphase_ticks / self.config.swing_ticks
         foot_location = state.foot_locations[:, leg_index]
         swing_height_ = self.swing_height(swing_prop)
         touchdown_location = self.raibert_touchdown_location(leg_index, command)
