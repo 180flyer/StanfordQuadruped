@@ -40,9 +40,7 @@ class Controller:
         self.trot_transition_mapping = {BehaviorState.REST: BehaviorState.TROT, BehaviorState.TROT: BehaviorState.REST,
                                         BehaviorState.HOP: BehaviorState.TROT,
                                         BehaviorState.FINISHHOP: BehaviorState.TROT}
-        self.activate_transition_mapping = {BehaviorState.DEACTIVATED: BehaviorState.REST,
-                                            BehaviorState.REST: BehaviorState.DEACTIVATED,
-                                            BehaviorState.TROT: BehaviorState.DEACTIVATED}
+        self.activate_transition_mapping = {BehaviorState.DEACTIVATED: BehaviorState.REST, BehaviorState.REST: BehaviorState.DEACTIVATED}
 
     def step_gait(self, state, command):
         """Calculate the desired foot locations for the next timestep
@@ -176,7 +174,7 @@ class Controller:
         state.roll = command.roll
         state.height = command.height
 
-        print("leg0(cmode,x,y,z): %d, %d, %0.4f, %0.4f, %0.4f\r" % (0, contact_modes[0], state.foot_locations[0, 0], state.foot_locations[1, 0], state.foot_locations[2, 0]))
+        #print("leg0(cmode,x,y,z): %d, %d, %0.4f, %0.4f, %0.4f\r" % (0, contact_modes[0], state.foot_locations[0, 0], state.foot_locations[1, 0], state.foot_locations[2, 0]))
 
     def set_pose_to_default(self):
         state.foot_locations = (

@@ -54,8 +54,10 @@ def main(stdscr):
             if key_press == 'q':
                 break
             elif key_press == 'a':
-                command.activate_event = True
-                command.yaw_rate = 0
+                # command.activate_event = True
+                # command.yaw_rate = 0
+                # print(state.behavior_state.name)
+                # print("\r")
                 print("Robot Activated\r")
                 break
         if key_press == 'q':
@@ -74,10 +76,10 @@ def main(stdscr):
             if key_press == 'q':
                 break
             elif key_press == 'a':
-                command.activate_event = True
-                controller.run(state, command)
-                command.activate_event = False
-                command.trot_event = False
+                # command.activate_event = True
+                # controller.run(state, command)
+                # command.activate_event = False
+                # command.trot_event = False
                 print("Robot Deactivate\r")
                 break
             elif key_press == 't':
@@ -89,19 +91,19 @@ def main(stdscr):
             elif key_press == 'k':
                 new_yaw_speed = 0
             elif key_press == 'i':
-                new_x_speed = min(config.max_x_velocity, x_speed + config.max_x_velocity / 10.0)
+                new_x_speed = min(config.max_x_velocity, x_speed + config.max_x_velocity / 5.0)
             elif key_press == ',':
-                new_x_speed = max(-1 * config.max_x_velocity, x_speed - config.max_x_velocity / 10.0)
+                new_x_speed = max(-1 * config.max_x_velocity, x_speed - config.max_x_velocity / 5.0)
             elif key_press == 'f':
-                new_y_speed = max(-1 * config.max_y_velocity, y_speed - config.max_y_velocity / 10.0)
+                new_y_speed = max(-1 * config.max_y_velocity, y_speed - config.max_y_velocity / 5.0)
             elif key_press == 's':
-                new_y_speed = min(config.max_y_velocity, y_speed + config.max_y_velocity / 10.0)
+                new_y_speed = min(config.max_y_velocity, y_speed + config.max_y_velocity / 5.0)
             elif key_press == 'd':
                 new_y_speed = 0
             elif key_press == 'j':
-                new_yaw_speed = min(config.max_yaw_rate, yaw_speed + config.max_yaw_rate / 10.0)
+                new_yaw_speed = min(config.max_yaw_rate, yaw_speed + config.max_yaw_rate / 5.0)
             elif key_press == 'l':
-                new_yaw_speed = max(-1 * config.max_yaw_rate, yaw_speed - config.max_yaw_rate / 10.0)
+                new_yaw_speed = max(-1 * config.max_yaw_rate, yaw_speed - config.max_yaw_rate / 5.0)
             else:
                 new_x_speed = x_speed
                 new_y_speed = y_speed
@@ -125,6 +127,7 @@ def main(stdscr):
 
             # Step the controller forward by dt
             controller.run(state, command)
+            print(state.behavior_state.name + "\r")
 
             # Update the pwm widths going to the servos
             # hardware_interface.set_actuator_postions(state.joint_angles)
