@@ -2,14 +2,14 @@ import numpy as np
 import time
 from src.Controller import Controller
 from src.State import State
-# from pupper.HardwareInterface import HardwareInterface
+from pupper.HardwareInterface import HardwareInterface
 from src.Command import Command
 from pupper.Config import Configuration
 from pupper.Kinematics import four_legs_inverse_kinematics
 import curses
 from curses import wrapper
 
-def main(stdscr):
+def main(stdscr, on_bot = False):
     """Main program
     """
     # Init Keyboard
@@ -20,8 +20,9 @@ def main(stdscr):
     stdscr.nodelay(True)  # Don't block - do not wait on keypress
 
     # Create config
-    config = Configuration()
-    # hardware_interface = HardwareInterface()
+    config = Configuration()\
+    if ~on_bot:
+        hardware_interface = HardwareInterface()
     command = Command()
 
     # Create controller and user input handles
@@ -128,9 +129,9 @@ def main(stdscr):
             # Step the controller forward by dt
             controller.run(state, command)
             print(state.behavior_state.name + "\r")
-
+            if ~on_bot:
             # Update the pwm widths going to the servos
-            # hardware_interface.set_actuator_postions(state.joint_angles)
+                hardware_interface.set_actuator_postions(state.joint_angles)
 
             command.activate_event = False
             command.trot_event = False
@@ -144,6 +145,5 @@ def main(stdscr):
 
 def print_speed_cmd(command):
     print("%0.2f, %0.2f, %0.2f\r" % (command.horizontal_velocity[0], command.horizontal_velocity[1], command.yaw_rate))
-
 
 wrapper(main)
