@@ -39,7 +39,7 @@ class SwingController:
         swing_subphase_ticks,
         leg_index,
         state,
-        command,
+        command
     ):
         swing_prop = swing_subphase_ticks / self.config.swing_ticks
         foot_location = state.foot_locations[:, leg_index]

@@ -114,6 +114,8 @@ class Controller:
             max_tilt = 0.4
             roll_compensation = correction_factor * np.clip(roll, -max_tilt, max_tilt)
             pitch_compensation = correction_factor * np.clip(pitch, -max_tilt, max_tilt)
+            #print("roll_compensation: %0.2f, pitch_compensation: %0.2f\r" % (roll_compensation, pitch_compensation))
+
             rmat = euler2mat(roll_compensation, pitch_compensation, 0)
 
             rotated_foot_locations = rmat.T @ rotated_foot_locations
@@ -173,8 +175,6 @@ class Controller:
         state.pitch = command.pitch
         state.roll = command.roll
         state.height = command.height
-
-        #print("leg0(cmode,x,y,z): %d, %d, %0.4f, %0.4f, %0.4f\r" % (0, contact_modes[0], state.foot_locations[0, 0], state.foot_locations[1, 0], state.foot_locations[2, 0]))
 
     def set_pose_to_default(self):
         state.foot_locations = (

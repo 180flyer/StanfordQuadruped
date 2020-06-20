@@ -48,7 +48,7 @@ class SwingController:
         rtl_x = touchdown_location[0]
         foot_up_angle = np.arcsin(-0.5)
         foot_down_angle = np.pi - foot_up_angle
-        a = (h - rtl_x)/np.cos(foot_down_angle)
+        a = (rtl_x - h)/np.cos(foot_down_angle)
         b = 2.2 * ((l1 + l2 / 2.0) - np.sqrt(l1 * l1 + l2 * l2))
         k = command.height + b / 2.0  # improved ellipse center
 
@@ -56,7 +56,7 @@ class SwingController:
         swing_angle_per_tick = swing_angle_range / self.config.swing_ticks
 
         theta = (swing_subphase_ticks + 1) * swing_angle_per_tick + foot_up_angle
-        new_x = h - a * np.cos(theta)  # Note the minus here to align with the positive x axis on the bot
+        new_x = h + a * np.cos(theta)
         new_z = k + b * np.sin(theta)
         # print("l1, l2, b, k, fu, fd, sapt, theta: %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f\r" % (
         #    l1, l2, b, k, foot_up_angle, foot_down_angle, swing_angle_per_tick, theta))
